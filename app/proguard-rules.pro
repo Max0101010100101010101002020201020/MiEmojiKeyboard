@@ -1,0 +1,2 @@
+-keep class com.example.mikeyboard.data.** { *; }
+-keepattributes Signature

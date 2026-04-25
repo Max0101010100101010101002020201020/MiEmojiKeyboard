@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MiEmojiKeyboard</string>
+    <string name="ime_name">MiEmoji Keyboard</string>
+    <string name="add_emoji">Añadir emoji personalizado</string>
+    <string name="delete_emoji">Mantén pulsado para eliminar</string>
+</resources>

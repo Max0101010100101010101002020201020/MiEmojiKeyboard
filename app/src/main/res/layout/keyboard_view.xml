@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#1A1A2E">
+
+    <!-- Action bar top -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="#16213E"
+        android:paddingHorizontal="8dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/switchKeyboardBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_recent_history"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#6C63FF"
+            android:contentDescription="Cambiar teclado"/>
+
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/addEmojiBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_input_add"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#6C63FF"
+            android:contentDescription="Añadir emoji"/>
+
+        <ImageButton
+            android:id="@+id/pasteBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#888888"
+            android:contentDescription="Pegar"/>
+
+        <ImageButton
+            android:id="@+id/backspaceBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_input_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#888888"
+            android:contentDescription="Borrar"/>
+    </LinearLayout>
+
+    <!-- Tab bar -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#0F3460"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/tabLayout"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"/>
+    </HorizontalScrollView>
+
+    <!-- Emoji grid -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/emojiRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp"
+            android:clipToPadding="false"/>
+
+        <TextView
+            android:id="@+id/emptyHint"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Toca ＋ para agregar tus emojis\nMantén presionado para eliminar"
+            android:textColor="#888888"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+</LinearLayout>
