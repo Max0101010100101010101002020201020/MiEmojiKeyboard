@@ -2,13 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mikeyboard">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-
     <application
-        android:label="MiEmojiKeyboard"
-        android:theme="@style/Theme.AppCompat">
+        android:label="MiEmojiKeyboard">
 
         <service
             android:name=".MyKeyboardService"
@@ -23,9 +18,5 @@
                 android:resource="@xml/method"/>
         </service>
 
-        <activity
-            android:name=".EmojiPickerActivity"
-            android:label="Añadir Emoji"
-            android:exported="false"/>
     </application>
 </manifest>
