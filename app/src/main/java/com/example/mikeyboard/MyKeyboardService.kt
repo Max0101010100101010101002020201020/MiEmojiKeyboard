@@ -248,3 +248,4 @@ class MyKeyboardService : InputMethodService() {
     override fun onEvaluateFullscreenMode() = false
     override fun onEvaluateInputViewShown() = true
 }
+// este archivo ya tiene todo, solo agrega la funcion de emojis custom al showEmojis

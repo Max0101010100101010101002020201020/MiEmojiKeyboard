@@ -7,67 +7,127 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.View
 import android.widget.*
-import com.example.mikeyboard.data.CustomEmojiRepository
-import com.example.mikeyboard.utils.ImageUtils
 import java.io.File
 import java.io.FileOutputStream
+import java.util.UUID
 
 class EmojiPickerActivity : Activity() {
 
-    companion object {
-        const val PICK_IMAGE_REQUEST = 1001
-    }
-
-    private lateinit var repository: CustomEmojiRepository
-    private lateinit var previewImage: ImageView
-    private lateinit var emojiNameInput: EditText
-    private lateinit var saveButton: Button
-    private var selectedBitmap: Bitmap? = null
+    private var selectedUri: Uri? = null
+    private lateinit var preview: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_emoji_picker)
-        repository = CustomEmojiRepository(this)
 
-        previewImage = findViewById(R.id.previewImage)
-        emojiNameInput = findViewById(R.id.emojiNameInput)
-        saveButton = findViewById(R.id.saveEmojiButton)
-
-        findViewById<Button>(R.id.pickImageButton).setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(0xFF000000.toInt())
+            setPadding(32, 48, 32, 32)
         }
 
-        saveButton.setOnClickListener { saveEmoji() }
+        TextView(this).apply {
+            text = "📷 Agregar Emoji"
+            textSize = 22f
+            setTextColor(0xFFFFFFFF.toInt())
+            setPadding(0, 0, 0, 24)
+            root.addView(this)
+        }
+
+        preview = ImageView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(200, 200).apply {
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                bottomMargin = 24
+            }
+            setBackgroundColor(0xFF1C1C1C.toInt())
+            root.addView(this)
+        }
+
+        Button(this).apply {
+            text = "Seleccionar imagen"
+            setBackgroundColor(0xFF333333.toInt())
+            setTextColor(0xFFFFFFFF.toInt())
+            setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(intent, 1001)
+            }
+            root.addView(this)
+        }
+
+        Button(this).apply {
+            text = "✅ Guardar emoji"
+            setBackgroundColor(0xFF2A5C2A.toInt())
+            setTextColor(0xFFFFFFFF.toInt())
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = 16 }
+            setOnClickListener { saveEmoji() }
+            root.addView(this)
+        }
+
+        // Mostrar emojis guardados
+        TextView(this).apply {
+            text = "Mis emojis (mantén para borrar):"
+            textSize = 14f
+            setTextColor(0xFF888888.toInt())
+            setPadding(0, 32, 0, 8)
+            root.addView(this)
+        }
+
+        val grid = GridLayout(this).apply {
+            columnCount = 5
+            root.addView(this)
+        }
+        loadSavedEmojis(grid)
+
+        val scroll = ScrollView(this).apply { addView(root) }
+        setContentView(scroll)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
-            val uri: Uri = data?.data ?: return
-            val bitmap = ImageUtils.resizeImage(this, uri)
-            selectedBitmap = bitmap
-            previewImage.setImageBitmap(bitmap)
-            saveButton.visibility = View.VISIBLE
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
+            selectedUri = data?.data
+            selectedUri?.let {
+                val bmp = MediaStore.Images.Media.getBitmap(contentResolver, it)
+                preview.setImageBitmap(bmp)
+            }
         }
     }
 
     private fun saveEmoji() {
-        val bitmap = selectedBitmap ?: run {
+        val uri = selectedUri ?: run {
             Toast.makeText(this, "Primero selecciona una imagen", Toast.LENGTH_SHORT).show()
             return
         }
-        val name = emojiNameInput.text.toString().ifBlank { "Mi Emoji" }
-
-        // Save bitmap to a temp file, then let repository handle the copy
-        val tempFile = File(cacheDir, "temp_emoji.png")
-        FileOutputStream(tempFile).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-        }
-        repository.saveCustomEmoji(name, tempFile.absolutePath)
-        Toast.makeText(this, "✅ Emoji guardado: $name", Toast.LENGTH_SHORT).show()
+        val bmp = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+        val scaled = Bitmap.createScaledBitmap(bmp, 128, 128, true)
+        val dir = File(filesDir, "emojis").also { it.mkdirs() }
+        val file = File(dir, "${UUID.randomUUID()}.png")
+        FileOutputStream(file).use { scaled.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        Toast.makeText(this, "✅ Emoji guardado", Toast.LENGTH_SHORT).show()
         finish()
+    }
+
+    private fun loadSavedEmojis(grid: GridLayout) {
+        val dir = File(filesDir, "emojis")
+        if (!dir.exists()) return
+        dir.listFiles()?.forEach { file ->
+            val img = ImageView(this).apply {
+                val bmp = BitmapFactory.decodeFile(file.absolutePath)
+                setImageBitmap(bmp)
+                layoutParams = GridLayout.LayoutParams().apply {
+                    width = 120
+                    height = 120
+                    setMargins(8, 8, 8, 8)
+                }
+                setOnLongClickListener {
+                    file.delete()
+                    grid.removeView(this)
+                    true
+                }
+            }
+            grid.addView(img)
+        }
     }
 }
