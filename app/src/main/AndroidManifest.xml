@@ -7,14 +7,12 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
 
     <application
-        android:label="@string/app_name"
-        
-        android:theme="@style/Theme.AppCompat.DayNight">
+        android:label="MiEmojiKeyboard"
+        android:theme="@style/Theme.AppCompat">
 
-        <!-- Keyboard service -->
         <service
             android:name=".MyKeyboardService"
-            android:label="@string/ime_name"
+            android:label="MiEmojiKeyboard"
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
             <intent-filter>
@@ -25,11 +23,9 @@
                 android:resource="@xml/method"/>
         </service>
 
-        <!-- Emoji picker activity -->
         <activity
             android:name=".EmojiPickerActivity"
             android:label="Añadir Emoji"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.DayNight"/>
+            android:exported="false"/>
     </application>
 </manifest>
